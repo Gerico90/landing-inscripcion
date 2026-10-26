@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscripción</title>
+</head>
+<body>
+
+  <!-- Sección 1: Banner / hero -->
+  <section>
+    <h1>[Título principal]</h1>
+    <p>[Frase corta debajo del título]</p>
+  </section>
+
+  <hr>
+
+  <!-- Sección 2: Contenido -->
+  <section>
+    <h2>[Título de la sección de contenido]</h2>
+    <p>[Texto de contenido]</p>
+  </section>
+
+  <hr>
+
+  <!-- Sección 3: Formulario -->
+  <section>
+    <h2>Inscríbete</h2>
+    <form id="formulario">
+      <p>
+        <label for="nombre">Nombre</label><br>
+        <input type="text" id="nombre" name="nombre" required>
+      </p>
+      <p>
+        <label for="telefono">Teléfono</label><br>
+        <input type="tel" id="telefono" name="telefono" required>
+      </p>
+      <p>Motivo de inscripción</p>
+      <p>
+        <label><input type="radio" name="motivo" value="Mejorar mi movilidad" required> Mejorar mi movilidad</label><br>
+        <label><input type="radio" name="motivo" value="Salud"> Salud</label><br>
+        <label><input type="radio" name="motivo" value="Meditación"> Meditación</label>
+      </p>
+      <button type="submit" id="enviar">Enviar</button>
+    </form>
+    <p id="mensaje"></p>
+  </section>
+
+  <script>
+    // URL de la aplicación web de Google Apps Script
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsF1wqkaBF9b99o2CTPmQGvieKjoUElkKkCxSHXI2GpWnZ9yIst0ch2DSEWFot7bcZdw/exec';
+
+    const formulario = document.getElementById('formulario');
+    const boton = document.getElementById('enviar');
+    const mensaje = document.getElementById('mensaje');
+
+    formulario.addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      boton.disabled = true;
+      mensaje.textContent = 'Enviando...';
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: new URLSearchParams(new FormData(formulario))
+        });
+        formulario.reset();
+        mensaje.textContent = '¡Gracias! Tu inscripción fue recibida.';
+      } catch (error) {
+        mensaje.textContent = 'No se pudo enviar. Intenta de nuevo.';
+      } finally {
+        boton.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
