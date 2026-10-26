@@ -4,6 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inscripción</title>
+
+  <!-- Meta Pixel: cuando exista, reemplazar TU_PIXEL_ID y quitar los comentarios de este bloque.
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'TU_PIXEL_ID');
+    fbq('track', 'PageView');
+  </script>
+  -->
 </head>
 <body>
 
@@ -54,6 +66,14 @@
     const boton = document.getElementById('enviar');
     const mensaje = document.getElementById('mensaje');
 
+    // Evento de conversión. Si el Meta Pixel está activo, también se lo envía.
+    function registrarConversion() {
+      console.log('Conversión: Lead');
+      if (typeof fbq === 'function') {
+        fbq('track', 'Lead');
+      }
+    }
+
     formulario.addEventListener('submit', async (evento) => {
       evento.preventDefault();
       boton.disabled = true;
@@ -66,6 +86,7 @@
           body: new URLSearchParams(new FormData(formulario))
         });
         formulario.reset();
+        registrarConversion();
         mensaje.textContent = '¡Gracias! Tu inscripción fue recibida.';
       } catch (error) {
         mensaje.textContent = 'No se pudo enviar. Intenta de nuevo.';
