@@ -10,17 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Meta Pixel: cuando exista, reemplazar TU_PIXEL_ID y quitar los comentarios de este bloque.
-  <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', 'TU_PIXEL_ID');
-    fbq('track', 'PageView');
-  </script>
-  -->
+  <!-- Google Tag Manager (desde aquí se administran Meta Pixel, Analytics, etc.) -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WM88JJ58');</script>
+  <!-- Fin Google Tag Manager -->
 
   <style>
     :root {
@@ -517,6 +513,9 @@
   </style>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WM88JJ58"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- Iconos reutilizables -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -777,12 +776,12 @@
       return formulario.reportValidity();
     }
 
-    // Evento de conversión. Si el Meta Pixel está activo, también se lo envía.
-    function registrarConversion() {
-      console.log('Conversión: Lead');
-      if (typeof fbq === 'function') {
-        fbq('track', 'Lead');
-      }
+    // Evento de conversión para Google Tag Manager.
+    // En GTM: activador "Evento personalizado" con nombre "lead" -> Meta Pixel Lead, GA4 generate_lead, etc.
+    // No se envían nombre ni teléfono/correo, solo el tipo de contacto.
+    function registrarConversion(tipoContacto) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'lead', tipo_contacto: tipoContacto });
     }
 
     formulario.addEventListener('submit', async (evento) => {
@@ -797,10 +796,11 @@
           mode: 'no-cors',
           body: new URLSearchParams(new FormData(formulario))
         });
+        const tipoContacto = formulario.tipo_contacto.value;
         formulario.reset();
         actualizarCampoContacto();
         actualizarMensajeAviso();
-        registrarConversion();
+        registrarConversion(tipoContacto);
         mensaje.textContent = '¡Gracias! Te contactaremos pronto para acordar día y hora.';
       } catch (error) {
         mensaje.textContent = 'No se pudo enviar. Intenta de nuevo.';
