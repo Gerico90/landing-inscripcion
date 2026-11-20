@@ -750,6 +750,14 @@
       campoContacto.setCustomValidity('');
     });
 
+    // Casilla del aviso: mensaje propio en lugar del del navegador
+    const casillaAviso = formulario.aviso;
+    function actualizarMensajeAviso() {
+      casillaAviso.setCustomValidity(casillaAviso.checked ? '' : 'Acepta los términos y servicios si deseas continuar.');
+    }
+    casillaAviso.addEventListener('change', actualizarMensajeAviso);
+    actualizarMensajeAviso();
+
     function validarCampos() {
       const nombre = campoNombre.value.trim();
       campoNombre.value = nombre;
@@ -791,6 +799,7 @@
         });
         formulario.reset();
         actualizarCampoContacto();
+        actualizarMensajeAviso();
         registrarConversion();
         mensaje.textContent = '¡Gracias! Te contactaremos pronto para acordar día y hora.';
       } catch (error) {
