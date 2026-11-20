@@ -18,6 +18,26 @@
   })(window,document,'script','dataLayer','GTM-WM88JJ58');</script>
   <!-- Fin Google Tag Manager -->
 
+  <!-- Datos estructurados (schema.org) para que Google entienda el negocio.
+       PENDIENTE con cliente: calle y número, teléfono, horarios ("openingHours") y "url" cuando el dominio esté activo. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ExerciseGym",
+    "name": "Kalimaya",
+    "description": "Yoga multinivel en Saltillo. Clases con guía cercana en grupos de máximo 8 personas.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Col. República",
+      "addressLocality": "Saltillo",
+      "addressRegion": "Coahuila",
+      "addressCountry": "MX"
+    },
+    "hasMap": "https://maps.app.goo.gl/nkQLo7efP2NTdH7F9",
+    "sameAs": ["https://www.instagram.com/kalimaya.yoga/"]
+  }
+  </script>
+
   <style>
     :root {
       --verde: #a9c19c;
@@ -420,6 +440,52 @@
       min-height: 1.2em;
     }
 
+    #mensaje.error { color: #a33a2b; }
+
+    /* Campo trampa para bots: invisible para personas */
+    .campo-trampa {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    /* Popup de confirmación */
+    .popup {
+      width: min(420px, calc(100% - 32px));
+      border: none;
+      border-radius: 14px;
+      padding: 30px 26px 24px;
+      text-align: center;
+      color: var(--texto);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .2);
+    }
+    .popup::backdrop { background: rgba(30, 40, 25, .45); }
+    .popup .icono {
+      width: 64px;
+      height: 44px;
+      color: var(--verde-texto);
+      margin-bottom: 8px;
+    }
+    .popup h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .popup p { font-size: 16px; margin-bottom: 20px; }
+    .popup .acciones {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .popup .boton { padding: 10px; font-size: 16px; }
+    .popup .secundario {
+      background: none;
+      border: 1px solid var(--gris-borde);
+    }
+    .popup .secundario:hover { background: var(--verde-claro); }
+
     /* Preguntas frecuentes */
     .faq { padding: 4px 0 20px; }
     .faq .titulo-seccion { margin-bottom: 8px; }
@@ -660,12 +726,18 @@
             <label class="campo" for="contacto" id="etiqueta-contacto">Número de WhatsApp</label>
             <input type="tel" id="contacto" name="contacto" placeholder="Tu número de WhatsApp (10 dígitos)" autocomplete="tel" inputmode="numeric" maxlength="10" required>
 
+            <!-- Campo trampa: las personas no lo ven; si llega lleno, es un bot -->
+            <div class="campo-trampa" aria-hidden="true">
+              <label for="sitio_web">Sitio web</label>
+              <input type="text" id="sitio_web" name="sitio_web" tabindex="-1" autocomplete="off">
+            </div>
+
             <button type="submit" id="enviar" class="boton">Quiero mi clase muestra</button>
             <p class="nota">Te contactaremos para acordar día y hora.</p>
 
             <label class="aviso">
               <input type="checkbox" name="aviso" required>
-              <span>He leído el <a href="#">aviso de privacidad</a></span>
+              <span>He leído el <a href="aviso-privacidad.html" target="_blank">aviso de privacidad</a></span>
             </label>
 
             <p id="mensaje" role="status"></p>
@@ -703,13 +775,24 @@
       <span class="separador"></span>
       <a href="https://www.instagram.com/kalimaya.yoga/" class="dato" target="_blank" rel="noopener"><svg class="icono"><use href="#i-instagram"/></svg> Instagram</a>
       <span class="separador"></span>
-      <a href="#" class="dato" style="text-decoration:underline">Aviso de privacidad</a>
+      <a href="aviso-privacidad.html" class="dato" style="text-decoration:underline">Aviso de privacidad</a>
     </div>
   </footer>
 
+  <!-- Popup de confirmación tras enviar el formulario -->
+  <dialog id="popup-gracias" class="popup" aria-labelledby="popup-titulo">
+    <svg class="icono" aria-hidden="true"><use href="#i-loto"/></svg>
+    <h2 id="popup-titulo">¡Gracias!</h2>
+    <p id="popup-texto">Recibimos tus datos. Te contactaremos pronto para acordar día y hora de tu clase muestra.</p>
+    <div class="acciones">
+      <button type="button" class="boton" id="popup-cerrar">Listo</button>
+      <a href="https://www.instagram.com/kalimaya.yoga/" class="boton secundario" target="_blank" rel="noopener">Mientras tanto, síguenos en Instagram</a>
+    </div>
+  </dialog>
+
   <script>
     // URL de la aplicación web de Google Apps Script
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfpwQC5916STBJtg-5e8khT7xwiicvbkG0vUi0u9VoUO45ma09OUpR3L9hpvNKB-szdA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmQ-_rmeyCsoEx8muZIO9KwGfo9uXEuL_NknUH1yvSX-97SfpF_HM9XWag3ZhI82h1Uw/exec';
 
     const formulario = document.getElementById('formulario');
     const boton = document.getElementById('enviar');
@@ -784,27 +867,77 @@
       window.dataLayer.push({ event: 'lead', tipo_contacto: tipoContacto });
     }
 
+    // Popup de confirmación
+    const popup = document.getElementById('popup-gracias');
+    document.getElementById('popup-cerrar').addEventListener('click', () => popup.close());
+    popup.addEventListener('click', (evento) => { if (evento.target === popup) popup.close(); });
+
+    function mostrarGracias(nombre, tipoContacto) {
+      const primerNombre = nombre.split(' ')[0];
+      const medio = tipoContacto === 'WhatsApp' ? 'por WhatsApp' : 'por correo';
+      document.getElementById('popup-titulo').textContent = `¡Gracias, ${primerNombre}!`;
+      document.getElementById('popup-texto').textContent =
+        `Recibimos tus datos. Te escribiremos ${medio} para acordar día y hora de tu clase muestra.`;
+      popup.showModal();
+    }
+
+    function limpiarFormulario() {
+      formulario.reset();
+      actualizarCampoContacto();
+      actualizarMensajeAviso();
+    }
+
+    function mostrarError(texto) {
+      mensaje.classList.add('error');
+      mensaje.innerHTML = texto + ' Si el problema sigue, escríbenos por <a href="https://www.instagram.com/kalimaya.yoga/" target="_blank" rel="noopener">Instagram</a>.';
+    }
+
+    // Antispam: momento en que se cargó la página (un bot envía en menos de 3 segundos)
+    const cargaPagina = Date.now();
+
     formulario.addEventListener('submit', async (evento) => {
       evento.preventDefault();
       if (!validarCampos()) return;
+
+      const nombre = campoNombre.value;
+      const tipoContacto = formulario.tipo_contacto.value;
+
+      // Si es un bot, fingimos que todo salió bien pero no enviamos nada
+      if (formulario.sitio_web.value || Date.now() - cargaPagina < 3000) {
+        limpiarFormulario();
+        return;
+      }
+
       boton.disabled = true;
+      mensaje.classList.remove('error');
       mensaje.textContent = 'Enviando...';
 
+      // Si Google no responde en 15 segundos, se considera fallo
+      const control = new AbortController();
+      const limite = setTimeout(() => control.abort(), 15000);
+
       try {
-        await fetch(SCRIPT_URL, {
+        const respuesta = await fetch(SCRIPT_URL, {
           method: 'POST',
-          mode: 'no-cors',
-          body: new URLSearchParams(new FormData(formulario))
+          body: new URLSearchParams(new FormData(formulario)),
+          signal: control.signal
         });
-        const tipoContacto = formulario.tipo_contacto.value;
-        formulario.reset();
-        actualizarCampoContacto();
-        actualizarMensajeAviso();
-        registrarConversion(tipoContacto);
-        mensaje.textContent = '¡Gracias! Te contactaremos pronto para acordar día y hora.';
+        const texto = (await respuesta.text()).trim();
+
+        if (texto === 'ok') {
+          mensaje.textContent = '';
+          limpiarFormulario();
+          registrarConversion(tipoContacto);
+          mostrarGracias(nombre, tipoContacto);
+        } else if (texto === 'invalido') {
+          mostrarError('Revisa que tu nombre y tu contacto estén bien escritos.');
+        } else {
+          mostrarError('No pudimos registrar tu solicitud. Intenta de nuevo.');
+        }
       } catch (error) {
-        mensaje.textContent = 'No se pudo enviar. Intenta de nuevo.';
+        mostrarError('No pudimos enviar tu solicitud. Revisa tu conexión e intenta de nuevo.');
       } finally {
+        clearTimeout(limite);
         boton.disabled = false;
       }
     });
