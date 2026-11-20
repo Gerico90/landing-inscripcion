@@ -802,6 +802,15 @@
     const etiquetaContacto = document.getElementById('etiqueta-contacto');
     const esCorreoSeleccionado = () => formulario.tipo_contacto.value === 'Correo electrónico';
 
+    // Botones "clase muestra": bajan al formulario sin agregar #registro a la dirección,
+    // así al recargar la página no salta directo al formulario.
+    document.querySelectorAll('a[href="#registro"]').forEach((enlace) => {
+      enlace.addEventListener('click', (evento) => {
+        evento.preventDefault();
+        document.getElementById('registro').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
     // Cambia el campo de contacto según WhatsApp o correo
     function actualizarCampoContacto() {
       const esCorreo = esCorreoSeleccionado();
